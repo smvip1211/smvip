@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>VIP Crypto Trading</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .container {
+      width: 100%;
+      max-width: 450px;
+      margin: 20px;
+      padding: 30px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+    
+    .logo {
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 2.5rem;
+      background: linear-gradient(45deg, #FFD700, #FF8C00);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-weight: bold;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: #e0e0e0;
+    }
+    
+    input {
+      width: 100%;
+      padding: 15px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 10px;
+      color: white;
+      font-size: 16px;
+      transition: all 0.3s ease;
+    }
+    
+    input:focus {
+      outline: none;
+      border-color: #FFD700;
+      background: rgba(255, 255, 255, 0.15);
+      box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+    }
+    
+    input::placeholder {
+      color: rgba(255, 255, 255, 0.6);
+    }
+    
+    .btn {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(45deg, #FF8C00, #FFD700);
+      border: none;
+      border-radius: 10px;
+      color: #000;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin: 10px 0;
+    }
+    
+    .btn:hover {
+      background: linear-gradient(45deg, #FFD700, #FF8C00);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(255, 140, 0, 0.4);
+    }
+    
+    .btn:disabled {
+      background: #555;
+      color: #999;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+    
+    .btn-repair {
+      background: linear-gradient(45deg, #9C27B0, #E91E63);
+      color: white;
+      margin-top: 10px;
+    }
+    
+    .link {
+      color: #FFD700;
+      cursor: pointer;
+      text-decoration: underline;
+      transition: color 0.3s ease;
+    }
+    
+    .link:hover {
+      color: #FF8C00;
+    }
+    
+    .hidden {
+      display: none !important;
+    }
+    
+    .info-card {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 10px;
+      border-left: 4px solid #FFD700;
+    }
+    
+    .user-item {
+      background: rgba(255, 255, 255, 0.05);
+      margin: 15px 0;
+      padding: 20px;
+      border-radius: 15px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .user-info {
+      margin-bottom: 15px;
+    }
+    
+    .user-info div {
+      margin: 5px 0;
+      font-size: 14px;
+    }
+    
+    .status-pending {
+      color: #FF8C00;
+      font-weight: bold;
+    }
+    
+    .status-approved {
+      color: #4CAF50;
+      font-weight: bold;
+    }
+    
+    .status-admin {
+      color: #FFD700;
+      font-weight: bold;
+    }
+    
+    .btn-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+    
+    .btn-small {
+      flex: 1;
+      padding: 10px;
+      font-size: 14px;
+      border-radius: 8px;
+    }
+    
+    .btn-approve {
+      background: linear-gradient(45deg, #4CAF50, #66BB6A) !important;
+      color: white !important;
+    }
+    
+    .btn-remove {
+      background: linear-gradient(45deg, #f44336, #ef5350) !important;
+      color: white !important;
+    }
+    
+    .message {
+      text-align: center;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 10px;
+      background: rgba(255, 215, 0, 0.1);
+      border: 1px solid rgba(255, 215, 0, 0.3);
+    }
+    
+    .error-message {
+      background: rgba(244, 67, 54, 0.1);
+      border: 1px solid rgba(244, 67, 54, 0.3);
+      color: #ff6b6b;
+    }
+    
+    .loading {
+      text-align: center;
+      padding: 40px;
+    }
+    
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 4px solid rgba(255, 215, 0, 0.3);
+      border-top: 4px solid #FFD700;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 20px;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    @media (max-width: 600px) {
+      .container {
+        margin: 10px;
+        padding: 20px;
+      }
+      
+      .logo {
+        font-size: 2rem;
+      }
+      
+      .btn-group {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Loading -->
+    <div id="loadingDiv" class="loading">
+      <div class="spinner"></div>
+      <p>Loading...</p>
+    </div>
+
+    <!-- Logo -->
+    <div class="logo">🚀 VIP CRYPTO</div>
+
+    <!-- Login Form -->
+    <div id="loginForm" class="hidden">
+      <h2 style="text-align: center; margin-bottom: 30px; color: #e0e0e0;">Welcome Back</h2>
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input type="email" id="email" placeholder="Enter your email" required>
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="Enter your password" required>
+      </div>
+      <button class="btn" onclick="handleLogin()">Login</button>
+      <button class="btn btn-secondary" onclick="showRegister()">Create Account</button>
+    </div>
+
+    <!-- Register Form -->
+    <div id="registerForm" class="hidden">
+      <h2 style="text-align: center; margin-bottom: 30px; color: #e0e0e0;">Create Account</h2>
+      <div class="form-group">
+        <label for="regName">Full Name</label>
+        <input type="text" id="regName" placeholder="Enter your full name" required>
+      </div>
+      <div class="form-group">
+        <label for="regEmail">Email Address</label>
+        <input type="email" id="regEmail" placeholder="Enter your email" required>
+      </div>
+      <div class="form-group">
+        <label for="regPassword">Password</label>
+        <input type="password" id="regPassword" placeholder="Create a password" required>
+      </div>
+      <button class="btn" onclick="handleRegister()">Create Account</button>
+      <button class="btn btn-secondary" onclick="showLogin()">Back to Login</button>
+    </div>
+
+    <!-- User Dashboard -->
+    <div id="userDashboard" class="hidden">
+      <h2 style="text-align: center; margin-bottom: 30px; color: #e0e0e0;">User Dashboard</h2>
+      <div id="userInfo"></div>
+      <button class="btn btn-secondary" onclick="handleLogout()">Logout</button>
+    </div>
+
+    <!-- Admin Panel -->
+    <div id="adminPanel" class="hidden">
+      <h2 style="text-align: center; margin-bottom: 30px; color: #FFD700;">👑 Admin Panel</h2>
+      <div id="adminInfo" class="info-card"></div>
+      <div id="usersList"></div>
+      <button class="btn btn-secondary" onclick="handleLogout()">Logout</button>
+      <button class="btn btn-secondary" onclick="window.open('admin.html', '_blank')">Open Advanced Admin</button>
+    </div>
+
+    <!-- Pending Status -->
+    <div id="pendingStatus" class="hidden">
+      <h2 style="text-align: center; margin-bottom: 30px; color: #FF8C00;">⏳ Account Pending</h2>
+      <div class="message">
+        <p>Your account is waiting for admin approval.</p>
+        <p>Please check back later or contact support.</p>
+      </div>
+      <button class="btn btn-secondary" onclick="handleLogout()">Logout</button>
+    </div>
+
+    <!-- Error State -->
+    <div id="errorState" class="hidden">
+      <h2 style="text-align: center; margin-bottom: 30px; color: #ff6b6b;">⚠️ Account Error</h2>
+      <div class="message error-message">
+        <p>There was an issue loading your account data.</p>
+        <p>This usually happens when your profile wasn't created properly.</p>
+      </div>
+      <button class="btn btn-repair" onclick="repairAccount()">🔧 Repair Account</button>
+      <button class="btn btn-secondary" onclick="handleLogout()">Logout</button>
+    </div>
+  </div>
+
+  <script type="module">
+    // Firebase imports
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+    import { 
+      getAuth, 
+      createUserWithEmailAndPassword, 
+      signInWithEmailAndPassword, 
+      signOut, 
+      onAuthStateChanged,
+      deleteUser
+    } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+    import { 
+      getFirestore, 
+      doc, 
+      setDoc, 
+      getDoc, 
+      collection, 
+      getDocs, 
+      deleteDoc,
+      onSnapshot
+    } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyDaOEIK0qrORLYsGu8KVSSOp7Nx5S_FC08",
+      authDomain: "smvip-2026f.firebaseapp.com",
+      projectId: "smvip-2026f",
+      storageBucket: "smvip-2026f.appspot.com",
+      messagingSenderId: "413048372155",
+      appId: "1:413048372155:web:55f2bff6e34e712dcbe29e",
+      measurementId: "G-8YPFCSYGZG"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // Global state
+    let currentUser = null;
+    let currentUserData = null;
+
+    // Show/Hide functions
+    function showOnly(elementId) {
+      const sections = ['loadingDiv', 'loginForm', 'registerForm', 'userDashboard', 'adminPanel', 'pendingStatus', 'errorState'];
+      sections.forEach(id => {
+        const element = document.getElementById(id);
+        if (element) {
+          if (id === elementId) {
+            element.classList.remove('hidden');
+          } else {
+            element.classList.add('hidden');
+          }
+        }
+      });
+    }
+
+    // Authentication state listener
+    onAuthStateChanged(auth, async (user) => {
+      console.log('Auth state changed:', user?.email || 'No user');
+      
+      if (user) {
+        currentUser = user;
+        await loadUserData();
+      } else {
+        currentUser = null;
+        currentUserData = null;
+        showOnly('loginForm');
+      }
+    });
+
+    // Load user data with better error handling
+    async function loadUserData() {
+      try {
+        showOnly('loadingDiv');
+        
+        const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
+        
+        if (userDoc.exists()) {
+          currentUserData = userDoc.data();
+          console.log('User role:', currentUserData.role);
+          
+          // Route based on role
+          switch (currentUserData.role) {
+            case 'admin':
+              await showAdminPanel();
+              break;
+            case 'approved':
+              showUserDashboard();
+              break;
+            case 'pending':
+            default:
+              showPendingStatus();
+              break;
+          }
+        } else {
+          // Document doesn't exist - show error state instead of creating automatically
+          console.log('User document not found');
+          showOnly('errorState');
+        }
+      } catch (error) {
+        console.error('Error loading user data:', error);
+        showOnly('errorState');
+      }
+    }
+
+    // Repair account function
+    window.repairAccount = async () => {
+      try {
+        showOnly('loadingDiv');
+        
+        const fullName = prompt('Please enter your full name:');
+        if (!fullName || fullName.trim() === '') {
+          alert('Full name is required to repair your account.');
+          showOnly('errorState');
+          return;
+        }
+
+        const defaultUserData = {
+          fullName: fullName.trim(),
+          email: currentUser.email,
+          role: currentUser.email.toLowerCase() === 'admin@example.com' ? 'admin' : 'pending',
+          paymentStatus: 'Not Paid',
+          totalPayments: 0,
+          createdAt: new Date().toISOString()
+        };
+        
+        await setDoc(doc(db, 'users', currentUser.uid), defaultUserData);
+        currentUserData = defaultUserData;
+        
+        alert('Account repaired successfully!');
+        
+        // Route to appropriate interface
+        if (currentUserData.role === 'admin') {
+          await showAdminPanel();
+        } else {
+          showPendingStatus();
+        }
+        
+      } catch (error) {
+        console.error('Error repairing account:', error);
+        alert('Failed to repair account: ' + error.message);
+        showOnly('errorState');
+      }
+    };
+
+    // Enhanced registration with better error handling
+    window.handleRegister = async () => {
+      const name = document.getElementById('regName').value.trim();
+      const email = document.getElementById('regEmail').value.trim();
+      const password = document.getElementById('regPassword').value;
+
+      if (!name || !email || !password) {
+        alert('Please fill in all fields');
+        return;
+      }
+
+      if (password.length < 6) {
+        alert('Password must be at least 6 characters long');
+        return;
+      }
+
+      try {
+        showOnly('loadingDiv');
+        
+        // Create user account
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+
+        try {
+          // Determine role
+          const role = email.toLowerCase() === 'admin@example.com' ? 'admin' : 'pending';
+
+          // Save user data to Firestore
+          const userData = {
+            fullName: name,
+            email: email,
+            role: role,
+            paymentStatus: 'Not Paid',
+            totalPayments: 0,
+            createdAt: new Date().toISOString()
+          };
+
+          await setDoc(doc(db, 'users', user.uid), userData);
+          console.log('User created with role:', role);
+          
+          if (role === 'admin') {
+            alert('Admin account created successfully!');
+          } else {
+            alert('Account created! Waiting for admin approval.');
+          }
+
+          // onAuthStateChanged will handle redirection
+        } catch (firestoreError) {
+          console.error('Firestore error during registration:', firestoreError);
+          
+          // If Firestore fails, delete the auth user to maintain consistency
+          try {
+            await deleteUser(user);
+            console.log('Cleaned up auth user due to Firestore error');
+          } catch (deleteError) {
+            console.error('Failed to cleanup auth user:', deleteError);
+          }
+          
+          showOnly('registerForm');
+          alert('Registration failed: Unable to create user profile. Please try again.');
+          return;
+        }
+
+      } catch (error) {
+        console.error('Registration error:', error);
+        showOnly('registerForm');
+        
+        switch (error.code) {
+          case 'auth/email-already-in-use':
+            alert('Email is already registered. Please login instead.');
+            showOnly('loginForm');
+            break;
+          case 'auth/weak-password':
+            alert('Password is too weak. Please use at least 6 characters.');
+            break;
+          case 'auth/invalid-email':
+            alert('Please enter a valid email address.');
+            break;
+          default:
+            alert('Registration failed: ' + error.message);
+        }
+      }
+    };
+
+    // Login function
+    window.handleLogin = async () => {
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+
+      if (!email || !password) {
+        alert('Please fill in all fields');
+        return;
+      }
+
+      try {
+        showOnly('loadingDiv');
+        await signInWithEmailAndPassword(auth, email, password);
+        // onAuthStateChanged will handle the rest
+      } catch (error) {
+        console.error('Login error:', error);
+        showOnly('loginForm');
+        
+        switch (error.code) {
+          case 'auth/user-not-found':
+            alert('No account found with this email. Please register first.');
+            break;
+          case 'auth/wrong-password':
+            alert('Incorrect password. Please try again.');
+            break;
+          case 'auth/invalid-email':
+            alert('Please enter a valid email address.');
+            break;
+          case 'auth/too-many-requests':
+            alert('Too many failed attempts. Please try again later.');
+            break;
+          default:
+            alert('Login failed: ' + error.message);
+        }
+      }
+    };
+
+    // Show user dashboard
+    function showUserDashboard() {
+      const userInfo = document.getElementById('userInfo');
+      userInfo.innerHTML = `
+        <div class="info-card">
+          <h3>👤 Profile Information</h3>
+          <div style="margin-top: 15px;">
+            <div><strong>Name:</strong> ${currentUserData.fullName}</div>
+            <div><strong>Email:</strong> ${currentUserData.email}</div>
+            <div><strong>Status:</strong> <span class="status-approved">${currentUserData.role}</span></div>
+            <div><strong>Payment:</strong> ${currentUserData.paymentStatus || 'Not Paid'}</div>
+            <div><strong>Total Payments:</strong> $${currentUserData.totalPayments || 0}</div>
+          </div>
+        </div>
+      `;
+      showOnly('userDashboard');
+    }
+
+    // Show pending status
+    function showPendingStatus() {
+      showOnly('pendingStatus');
+    }
+
+    // Show admin panel
+    async function showAdminPanel() {
+      try {
+        const adminInfo = document.getElementById('adminInfo');
+        adminInfo.innerHTML = `
+          <h3>👑 Administrator</h3>
+          <div style="margin-top: 10px;">
+            <div><strong>Name:</strong> ${currentUserData.fullName}</div>
+            <div><strong>Email:</strong> ${currentUserData.email}</div>
+            <div><strong>Role:</strong> <span class="status-admin">ADMIN</span></div>
+          </div>
+        `;
+
+        await loadAllUsers();
+        showOnly('adminPanel');
+      } catch (error) {
+        console.error('Error showing admin panel:', error);
+        alert('Error loading admin panel: ' + error.message);
+      }
+    }
+
+    // Load all users for admin panel
+    async function loadAllUsers() {
+      try {
+        const usersList = document.getElementById('usersList');
+        usersList.innerHTML = '<h3>📊 User Management</h3>';
+
+        const usersSnapshot = await getDocs(collection(db, 'users'));
+        let userCount = 0;
+
+        usersSnapshot.forEach((doc) => {
+          const userData = doc.data();
+          
+          // Skip showing admin users in the list
+          if (userData.role !== 'admin') {
+            userCount++;
+            const userItem = createUserItem(doc.id, userData);
+            usersList.appendChild(userItem);
+          }
+        });
+
+        if (userCount === 0) {
+          usersList.innerHTML += '<div class="info-card">No users found.</div>';
+        }
+      } catch (error) {
+        console.error('Error loading users:', error);
+        document.getElementById('usersList').innerHTML = '<div class="info-card">Error loading users.</div>';
+      }
+    }
+
+    // Create user item for admin panel
+    function createUserItem(userId, userData) {
+      const userItem = document.createElement('div');
+      userItem.className = 'user-item';
+      
+      const statusClass = userData.role === 'pending' ? 'status-pending' : 'status-approved';
+      
+      userItem.innerHTML = `
+        <div class="user-info">
+          <div><strong>Name:</strong> ${userData.fullName || 'No name'}</div>
+          <div><strong>Email:</strong> ${userData.email}</div>
+          <div><strong>Status:</strong> <span class="${statusClass}">${userData.role.toUpperCase()}</span></div>
+          <div><strong>Payment:</strong> ${userData.paymentStatus || 'Not Paid'}</div>
+          <div><strong>Total:</strong> $${userData.totalPayments || 0}</div>
+          <div><strong>Created:</strong> ${userData.createdAt ? new Date(userData.createdAt).toLocaleDateString() : 'Unknown'}</div>
+        </div>
+        <div class="btn-group">
+          ${userData.role === 'pending' ? 
+            `<button class="btn btn-small btn-approve" onclick="approveUser('${userId}', '${userData.fullName}')">✅ Approve</button>` : 
+            '<button class="btn btn-small" disabled>✅ Approved</button>'
+          }
+          <button class="btn btn-small btn-remove" onclick="removeUser('${userId}', '${userData.fullName}', '${userData.email}')">🗑️ Remove</button>
+        </div>
+      `;
+      
+      return userItem;
+    }
+
+    // Approve user
+    window.approveUser = async (userId, userName) => {
+      try {
+        await setDoc(doc(db, 'users', userId), { role: 'approved' }, { merge: true });
+        alert(`${userName} has been approved!`);
+        await loadAllUsers(); // Refresh the list
+      } catch (error) {
+        console.error('Error approving user:', error);
+        alert('Failed to approve user: ' + error.message);
+      }
+    };
+
+    // Remove user
+    window.removeUser = async (userId, userName, userEmail) => {
+      if (confirm(`Are you sure you want to remove ${userName} (${userEmail})?`)) {
+        try {
+          await deleteDoc(doc(db, 'users', userId));
+          alert(`${userName} has been removed.`);
+          await loadAllUsers(); // Refresh the list
+        } catch (error) {
+          console.error('Error removing user:', error);
+          alert('Failed to remove user: ' + error.message);
+        }
+      }
+    };
+
+    // Logout
+    window.handleLogout = async () => {
+      try {
+        await signOut(auth);
+        alert('Logged out successfully!');
+      } catch (error) {
+        console.error('Logout error:', error);
+        alert('Error logging out: ' + error.message);
+      }
+    };
+
+    // Show register form
+    window.showRegister = () => {
+      showOnly('registerForm');
+    };
+
+    // Show login form
+    window.showLogin = () => {
+      showOnly('loginForm');
+    };
+
+    // Handle Enter key presses
+    document.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        if (!document.getElementById('loginForm').classList.contains('hidden')) {
+          handleLogin();
+        } else if (!document.getElementById('registerForm').classList.contains('hidden')) {
+          handleRegister();
+        }
+      }
+    });
+
+    // Initialize - start with loading screen
+    showOnly('loadingDiv');
+  </script>
+</body>
+</html>
