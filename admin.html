@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+      color: #ffffff;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+      padding: 20px 0;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      backdrop-filter: blur(10px);
+    }
+
+    .header-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 20px;
+    }
+
+    .logo {
+      font-size: 1.8rem;
+      font-weight: bold;
+      background: linear-gradient(45deg, #FFD700, #FF8C00);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .admin-info {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .admin-badge {
+      background: linear-gradient(45deg, #FFD700, #FF8C00);
+      color: #000;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-weight: bold;
+      font-size: 0.9rem;
+    }
+
+    /* Container */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 30px 20px;
+    }
+
+    /* Stats Cards */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .stat-card {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 15px;
+      padding: 25px;
+      text-align: center;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #FFD700, #FF8C00);
+    }
+
+    .stat-number {
+      font-size: 2.5rem;
+      font-weight: bold;
+      background: linear-gradient(45deg, #4CAF50, #66BB6A);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 10px;
+    }
+
+    .stat-label {
+      color: #b0b0b0;
+      font-size: 1rem;
+      font-weight: 500;
+    }
+
+    /* Main Card */
+    .main-card {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 20px;
+      padding: 30px;
+      margin-bottom: 30px;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .card-title {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #FFD700;
+    }
+
+    /* Search and Filter */
+    .controls {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 25px;
+      flex-wrap: wrap;
+    }
+
+    .search-box {
+      flex: 1;
+      min-width: 250px;
+      padding: 12px 20px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 25px;
+      color: white;
+      font-size: 14px;
+      transition: all 0.3s ease;
+    }
+
+    .search-box:focus {
+      outline: none;
+      border-color: #FFD700;
+      background: rgba(255, 255, 255, 0.15);
+      box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+    }
+
+    .search-box::placeholder {
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .filter-select {
+      padding: 12px 20px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 25px;
+      color: white;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .filter-select option {
+      background: #1a1a2e;
+      color: white;
+    }
+
+    /* User List */
+    .users-grid {
+      display: grid;
+      gap: 15px;
+    }
+
+    .user-item {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.04) 100%);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      padding: 20px;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .user-item:hover {
+      transform: translateX(5px);
+      border-color: rgba(255, 215, 0, 0.3);
+      box-shadow: -5px 0 15px rgba(255, 215, 0, 0.1);
+    }
+
+    .user-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 15px;
+    }
+
+    .user-info {
+      flex: 1;
+    }
+
+    .user-name {
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin-bottom: 5px;
+      color: #ffffff;
+    }
+
+    .user-email {
+      color: #b0b0b0;
+      font-size: 0.9rem;
+      margin-bottom: 10px;
+    }
+
+    .user-details {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .detail-item {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 10px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+    }
+
+    .detail-label {
+      color: #888;
+      display: block;
+      margin-bottom: 3px;
+    }
+
+    .detail-value {
+      font-weight: bold;
+    }
+
+    /* Status Badges */
+    .status-badge {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .status-pending {
+      background: linear-gradient(45deg, #FF8C00, #FFD700);
+      color: #000;
+    }
+
+    .status-approved {
+      background: linear-gradient(45deg, #4CAF50, #66BB6A);
+      color: white;
+    }
+
+    .status-admin {
+      background: linear-gradient(45deg, #9C27B0, #E91E63);
+      color: white;
+    }
+
+    /* Action Buttons */
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .btn-approve {
+      background: linear-gradient(45deg, #4CAF50, #66BB6A);
+      color: white;
+    }
+
+    .btn-approve:hover {
+      background: linear-gradient(45deg, #66BB6A, #4CAF50);
+    }
+
+    .btn-remove {
+      background: linear-gradient(45deg, #f44336, #ef5350);
+      color: white;
+    }
+
+    .btn-remove:hover {
+      background: linear-gradient(45deg, #ef5350, #f44336);
+    }
+
+    .btn-logout {
+      background: linear-gradient(45deg, #FF8C00, #FFD700);
+      color: #000;
+      padding: 12px 25px;
+      font-size: 1rem;
+    }
+
+    .btn-logout:hover {
+      background: linear-gradient(45deg, #FFD700, #FF8C00);
+    }
+
+    /* Loading States */
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #888;
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid rgba(255, 215, 0, 0.3);
+      border-top: 3px solid #FFD700;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 20px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #888;
+    }
+
+    .empty-icon {
+      font-size: 4rem;
+      margin-bottom: 20px;
+      opacity: 0.5;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .container {
+        padding: 20px 15px;
+      }
+
+      .header-content {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+      }
+
+      .controls {
+        flex-direction: column;
+      }
+
+      .search-box {
+        min-width: auto;
+      }
+
+      .user-header {
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      .actions {
+        justify-content: center;
+      }
+
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .user-details {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .user-item {
+      animation: fadeIn 0.5s ease forwards;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(45deg, #FFD700, #FF8C00);
+      border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(45deg, #FF8C00, #FFD700);
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-content">
+      <div class="logo">🚀 SM VIP SIGNAL ADMIN</div>
+      <div class="admin-info">
+        <div class="admin-badge">👑 ADMINISTRATOR</div>
+        <button class="btn btn-logout" onclick="handleLogout()">
+          🚪 Logout
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <div class="container">
+    <!-- Loading State -->
+    <div id="loadingState" class="loading">
+      <div class="spinner"></div>
+      <p>Loading admin panel...</p>
+    </div>
+
+    <!-- Stats Dashboard -->
+    <div id="statsSection" class="stats-grid" style="display: none;">
+      <div class="stat-card">
+        <div class="stat-number" id="totalUsers">0</div>
+        <div class="stat-label">Total Users</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="pendingUsers">0</div>
+        <div class="stat-label">Pending Approval</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="approvedUsers">0</div>
+        <div class="stat-label">Approved Users</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="totalRevenue">$0</div>
+        <div class="stat-label">Total Revenue</div>
+      </div>
+    </div>
+
+    <!-- User Management -->
+    <div id="userManagement" class="main-card" style="display: none;">
+      <div class="card-header">
+        <h2 class="card-title">👥 User Management</h2>
+        <button class="btn" onclick="refreshUsers()" style="background: rgba(255,255,255,0.1); color: white;">
+          🔄 Refresh
+        </button>
+      </div>
+
+      <!-- Search and Filter Controls -->
+      <div class="controls">
+        <input 
+          type="text" 
+          id="searchInput" 
+          class="search-box" 
+          placeholder="🔍 Search users by name or email..."
+          onkeyup="filterUsers()"
+        >
+        <select id="statusFilter" class="filter-select" onchange="filterUsers()">
+          <option value="all">All Status</option>
+          <option value="pending">Pending</option>
+          <option value="approved">Approved</option>
+        </select>
+      </div>
+
+      <!-- Users List -->
+      <div id="usersList" class="users-grid"></div>
+
+      <!-- Empty State -->
+      <div id="emptyState" class="empty-state" style="display: none;">
+        <div class="empty-icon">👤</div>
+        <h3>No Users Found</h3>
+        <p>No users match your search criteria.</p>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    // Firebase imports
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+    import { 
+      getAuth, 
+      onAuthStateChanged, 
+      signOut 
+    } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+    import { 
+      getFirestore, 
+      collection, 
+      getDocs, 
+      doc, 
+      setDoc, 
+      deleteDoc,
+      onSnapshot,
+      query,
+      where,
+      orderBy
+    } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyDaOEIK0qrORLYsGu8KVSSOp7Nx5S_FC08",
+      authDomain: "smvip-2026f.firebaseapp.com",
+      projectId: "smvip-2026f",
+      storageBucket: "smvip-2026f.appspot.com",
+      messagingSenderId: "413048372155",
+      appId: "1:413048372155:web:55f2bff6e34e712dcbe29e",
+      measurementId: "G-8YPFCSYGZG"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // Global variables
+    let allUsers = [];
+    let filteredUsers = [];
+    let currentAdmin = null;
+
+    // Authentication check
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        // Check if user is admin
+        try {
+          const userDoc = await getDocs(query(collection(db, 'users'), where('email', '==', user.email)));
+          if (!userDoc.empty) {
+            const userData = userDoc.docs[0].data();
+            if (userData.role === 'admin') {
+              currentAdmin = { ...userData, uid: user.uid };
+              await initializeAdminPanel();
+            } else {
+              alert('Access denied! Admin privileges required.');
+              window.location.href = 'index.html';
+            }
+          } else {
+            alert('User data not found.');
+            window.location.href = 'index.html';
+          }
+        } catch (error) {
+          console.error('Error checking admin status:', error);
+          alert('Error verifying admin access.');
+          window.location.href = 'index.html';
+        }
+      } else {
+        // Not authenticated
+        window.location.href = 'index.html';
+      }
+    });
+
+    // Initialize admin panel
+    async function initializeAdminPanel() {
+      try {
+        // Setup real-time listener for users
+        const usersRef = collection(db, 'users');
+        onSnapshot(usersRef, (snapshot) => {
+          allUsers = [];
+          snapshot.forEach((doc) => {
+            const userData = doc.data();
+            if (userData.role !== 'admin') { // Don't show admin users
+              allUsers.push({
+                id: doc.id,
+                ...userData
+              });
+            }
+          });
+          
+          // Sort users by creation date (newest first)
+          allUsers.sort((a, b) => {
+            const dateA = new Date(a.createdAt || 0);
+            const dateB = new Date(b.createdAt || 0);
+            return dateB - dateA;
+          });
+
+          updateStats();
+          filterUsers();
+        });
+
+        // Show the interface
+        document.getElementById('loadingState').style.display = 'none';
+        document.getElementById('statsSection').style.display = 'grid';
+        document.getElementById('userManagement').style.display = 'block';
+
+      } catch (error) {
+        console.error('Error initializing admin panel:', error);
+        alert('Error loading admin panel.');
+      }
+    }
+
+    // Update statistics
+    function updateStats() {
+      const total = allUsers.length;
+      const pending = allUsers.filter(user => user.role === 'pending').length;
+      const approved = allUsers.filter(user => user.role === 'approved').length;
+      const revenue = allUsers.reduce((sum, user) => sum + (user.totalPayments || 0), 0);
+
+      document.getElementById('totalUsers').textContent = total;
+      document.getElementById('pendingUsers').textContent = pending;
+      document.getElementById('approvedUsers').textContent = approved;
+      document.getElementById('totalRevenue').textContent = `$${revenue}`;
+    }
+
+    // Filter users based on search and status
+    window.filterUsers = () => {
+      const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+      const statusFilter = document.getElementById('statusFilter').value;
+
+      filteredUsers = allUsers.filter(user => {
+        const matchesSearch = !searchTerm || 
+          user.fullName?.toLowerCase().includes(searchTerm) ||
+          user.email?.toLowerCase().includes(searchTerm);
+        
+        const matchesStatus = statusFilter === 'all' || user.role === statusFilter;
+        
+        return matchesSearch && matchesStatus;
+      });
+
+      renderUsers();
+    };
+
+    // Render users list
+    function renderUsers() {
+      const usersList = document.getElementById('usersList');
+      const emptyState = document.getElementById('emptyState');
+
+      if (filteredUsers.length === 0) {
+        usersList.innerHTML = '';
+        emptyState.style.display = 'block';
+        return;
+      }
+
+      emptyState.style.display = 'none';
+      usersList.innerHTML = filteredUsers.map(user => createUserCard(user)).join('');
+    }
+
+    // Create user card HTML
+    function createUserCard(user) {
+      const createdDate = user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'Unknown';
+      const statusClass = user.role === 'pending' ? 'status-pending' : 'status-approved';
+      
+      return `
+        <div class="user-item">
+          <div class="user-header">
+            <div class="user-info">
+              <div class="user-name">${user.fullName || 'No Name'}</div>
+              <div class="user-email">${user.email}</div>
+              <div class="status-badge ${statusClass}">${user.role || 'pending'}</div>
+            </div>
+          </div>
+          
+          <div class="user-details">
+            <div class="detail-item">
+              <span class="detail-label">Payment Status</span>
+              <span class="detail-value">${user.paymentStatus || 'Not Paid'}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Total Payments</span>
+              <span class="detail-value">$${user.totalPayments || 0}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Joined Date</span>
+              <span class="detail-value">${createdDate}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">User ID</span>
+              <span class="detail-value" style="font-size: 0.75rem; opacity: 0.7;">${user.id.substring(0, 8)}...</span>
+            </div>
+          </div>
+          
+          <div class="actions">
+            ${user.role === 'pending' ? 
+              `<button class="btn btn-approve" onclick="approveUser('${user.id}', '${user.fullName}')">
+                ✅ Approve User
+              </button>` : 
+              `<button class="btn" style="background: #4CAF50; color: white; cursor: not-allowed;" disabled>
+                ✅ Already Approved
+              </button>`
+            }
+            <button class="btn btn-remove" onclick="removeUser('${user.id}', '${user.fullName}', '${user.email}')">
+              🗑️ Remove User
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    // Approve user
+    window.approveUser = async (userId, userName) => {
+      if (confirm(`Are you sure you want to approve ${userName}?`)) {
+        try {
+          await setDoc(doc(db, 'users', userId), { role: 'approved' }, { merge: true });
+          
+          // Show success message
+          showNotification(`✅ ${userName} has been approved successfully!`, 'success');
+        } catch (error) {
+          console.error('Error approving user:', error);
+          showNotification(`❌ Failed to approve ${userName}. Please try again.`, 'error');
+        }
+      }
+    };
+
+    // Remove user
+    window.removeUser = async (userId, userName, userEmail) => {
+      if (confirm(`⚠️ Are you sure you want to permanently remove ${userName} (${userEmail})?\n\nThis action cannot be undone.`)) {
+        try {
+          await deleteDoc(doc(db, 'users', userId));
+          showNotification(`🗑️ ${userName} has been removed successfully.`, 'success');
+        } catch (error) {
+          console.error('Error removing user:', error);
+          showNotification(`❌ Failed to remove ${userName}. Please try again.`, 'error');
+        }
+      }
+    };
+
+    // Refresh users manually
+    window.refreshUsers = async () => {
+      const refreshBtn = event.target;
+      refreshBtn.innerHTML = '⏳ Refreshing...';
+      refreshBtn.disabled = true;
+      
+      setTimeout(() => {
+        refreshBtn.innerHTML = '🔄 Refresh';
+        refreshBtn.disabled = false;
+        showNotification('📊 User data refreshed!', 'info');
+      }, 1000);
+    };
+
+    // Logout function
+    window.handleLogout = async () => {
+      if (confirm('Are you sure you want to logout?')) {
+        try {
+          await signOut(auth);
+          showNotification('👋 Logged out successfully!', 'success');
+          setTimeout(() => {
+            window.location.href = 'index.html';
+          }, 1500);
+        } catch (error) {
+          console.error('Logout error:', error);
+          alert('Error logging out. Please try again.');
+        }
+      }
+    };
+
+    // Show notification (simple implementation)
+    function showNotification(message, type) {
+      // Create notification element
+      const notification = document.createElement('div');
+      notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: ${type === 'success' ? 'linear-gradient(45deg, #4CAF50, #66BB6A)' : 
+                    type === 'error' ? 'linear-gradient(45deg, #f44336, #ef5350)' : 
+                    'linear-gradient(45deg, #2196F3, #64B5F6)'};
+        color: white;
+        padding: 15px 25px;
+        border-radius: 10px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        z-index: 10000;
+        font-weight: bold;
+        max-width: 300px;
+        animation: slideIn 0.3s ease;
+      `;
+      
+      notification.textContent = message;
+      document.body.appendChild(notification);
+      
+      // Remove after 3 seconds
+      setTimeout(() => {
+        notification.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => {
+          document.body.removeChild(notification);
+        }, 300);
+      }, 3000);
+    }
+
+    // Add CSS for notifications
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes slideIn {
+        from {
+          transform: translateX(100%);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+      
+      @keyframes slideOut {
+        from {
+          transform: translateX(0);
+          opacity: 1;
+        }
+        to {
+          transform: translateX(100%);
+          opacity: 0;
+        }
+      }
+    `;
+    document.head.appendChild(style);
+
+    // Initialize search on page load
+    document.addEventListener('DOMContentLoaded', () => {
+      // Focus search input when page loads
+      setTimeout(() => {
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput) {
+          searchInput.focus();
+        }
+      }, 1000);
+    });
+  </script>
+</body>
+</html>
